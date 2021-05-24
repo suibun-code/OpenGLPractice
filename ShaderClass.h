@@ -11,6 +11,9 @@ std::string GetFileContents(const char* filename);
 
 class Shader
 {
+private:
+	void CompileErrors(unsigned int shader, const char* type);
+
 public:
 	GLuint ID;
 	Shader(const char* vertexFile, const char* fragmentFile);

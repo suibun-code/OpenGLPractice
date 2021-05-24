@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb/stb_image.h>
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 800
@@ -12,22 +13,30 @@
 
 GLfloat vertices[] =
 {
-//						POSITION				    ||	    COLOR
-   -0.5f, -0.5f * float(sqrt(3)) / 3,     0.0f,   0.8f, 0.3f, 0.02f, //Lower left corner.
-	0.5f, -0.5f * float(sqrt(3)) / 3,     0.0f,   0.8f, 0.3f, 0.02f, //Lower right corner.
-	0.0f,  0.5f * float(sqrt(3)) * 2 / 3, 0.0f,   1.0f, 0.6f, 0.32f, //Upper corner.
+//		  POSITION	   ||      COLOR
+	-0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f, //Lower left corner.
+	-0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f, //Lower right corner.
+	 0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f, //Upper corner.
+	 0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 1.0f, //Inner left corner.
+	
+ //  -0.5f, -0.5f * float(sqrt(3)) / 3,     0.0f,   0.8f, 0.3f, 0.02f, //Lower left corner.
+	//0.5f, -0.5f * float(sqrt(3)) / 3,     0.0f,   0.8f, 0.3f, 0.02f, //Lower right corner.
+	//0.0f,  0.5f * float(sqrt(3)) * 2 / 3, 0.0f,   1.0f, 0.6f, 0.32f, //Upper corner.
 
-	-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,   0.9f, 0.3f, 0.17f, //Inner left corner.
-	 0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,   0.9f, 0.3f, 0.17f, //Inner right corner.
-	 0.0f,    -0.5f * float(sqrt(3)) / 3, 0.0f,   0.8f, 0.3f, 0.02f  //Inner down corner.
+ //  -0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,    0.9f, 0.3f, 0.17f, //Inner left corner.
+	//0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,    0.9f, 0.3f, 0.17f, //Inner right corner.
+	//0.0f,    -0.5f * float(sqrt(3)) / 3, 0.0f,    0.8f, 0.3f, 0.02f  //Inner down corner.
 
 };
 
 GLuint indices[] =
 {
-	0, 3, 5, //Lower left triangle.
-	3, 2, 4, //Lower right triangle.
-	5, 4, 1 //Upper triangle.
+	0, 2, 1, //Upper triangle.
+	0, 3, 2  //Lower triangle.
+	
+	//0, 3, 5, //Lower left triangle.
+	//3, 2, 4, //Lower right triangle.
+	//5, 4, 1 //Upper triangle.
 };
 
 int main()
@@ -69,6 +78,9 @@ int main()
 	vbo1.Unbind();
 	ibo1.Unbind();
 
+	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+	
+
 	//Clear to a new color and swap buffers.
 	glClearColor(0.07, 0.13f, 0.17f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -80,8 +92,9 @@ int main()
 		glClearColor(0.07, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		shaderProgram.Activate();
+		glUniform1f(uniID, 1.5f);
 		vao1.Bind();
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);
 		
 		glfwPollEvents();
