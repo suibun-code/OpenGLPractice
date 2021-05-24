@@ -156,6 +156,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="stb.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
@@ -166,8 +167,12 @@
   <ItemGroup>
     <ClInclude Include="IBO.h" />
     <ClInclude Include="ShaderClass.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\shrek.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
