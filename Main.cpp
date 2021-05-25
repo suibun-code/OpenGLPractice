@@ -11,6 +11,7 @@
 
 #include "ShaderClass.h"
 #include "Texture.h"
+#include "Camera.h"
 
 #include "VAO.h"
 #include "VBO.h"
@@ -45,6 +46,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	//Create and use window, as well as do error checking to make sure it is created properly.
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Practice", NULL, NULL);
@@ -77,16 +79,14 @@ int main()
 	vbo1.Unbind();
 	ibo1.Unbind();
 
-	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-
 	//Texture
 	Texture shrek("brick.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	shrek.TexUnit(shaderProgram, "tex0", 0);
 
-	float rotation = 0.f;
-	double prevTime = glfwGetTime();
-
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
+
+	Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT, glm::vec3(0.f, 0.f, 2.f));
 
 	//Loop to poll events.
 	while (!glfwWindowShouldClose(window))
@@ -95,29 +95,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shaderProgram.Activate();
 
-		double crntTime = glfwGetTime();
-		if (crntTime - prevTime >= 1 / 165)
-		{
-			rotation += 0.2f;
-			prevTime = crntTime;
-		}
-
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-
-		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.f, 1.f, 0.f));
-		view = glm::translate(view, glm::vec3(0.f, -0.5f, -2.0f));
-		projection = glm::perspective(glm::radians(45.0f), (float)(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.f);
-
-		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		int projectionLoc = glGetUniformLocation(shaderProgram.ID, "projection");
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		glUniform1f(uniID, 1.f);
+		camera.Inputs(window);
+		camera.Matrix(45.f, 0.1f, 100.f, shaderProgram, "camMatrix");
+		
 		shrek.Bind();
 		vao1.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
